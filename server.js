@@ -51,6 +51,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 // ---------------------------------------------------------------------------
 // O front-end chama /api/tmdb/... e o servidor acrescenta a chave privada.
 // Assim a TMDB_API_KEY não fica exposta no HTML/JavaScript público.
+app.get('/api/tmdb/status', (req,res) => {
+  res.set('Cache-Control', 'no-store');
+  res.json({ configured: !!getTmdbApiKey() });
+});
 app.get('/api/tmdb/*', async (req, res) => {
   const apiKey = getTmdbApiKey();
 
