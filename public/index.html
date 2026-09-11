@@ -1461,7 +1461,7 @@
 
 
     // TMDB: a chave fica no servidor (Render). O navegador usa apenas o proxy.
-    const TMDB_BASE = '/api/tmdb';
+    const TMDB_BASE = `${window.location.origin}/api/tmdb`;
     const TMDB_IMAGE = '/tmdb-image/w185';
 
     const movieSearch = document.getElementById('movieSearch');
