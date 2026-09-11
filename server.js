@@ -36,7 +36,9 @@ const ALLOWED_TMDB_SIZES = new Set(['w185', 'w342', 'w500', 'w780', 'original'])
 
 // A chave do TMDB fica somente no ambiente do servidor (Render).
 // Nunca é enviada de volta ao navegador.
-const TMDB_API_KEY = process.env.TMDB_API_KEY;
+function getTmdbApiKey() {
+  return String(process.env.TMDB_API_KEY || '').trim();
+}
 
 // ---------------------------------------------------------------------------
 // 1) Editor visual estático
@@ -50,11 +52,13 @@ app.use(express.static(path.join(__dirname, 'public')));
 // O front-end chama /api/tmdb/... e o servidor acrescenta a chave privada.
 // Assim a TMDB_API_KEY não fica exposta no HTML/JavaScript público.
 app.get('/api/tmdb/*', async (req, res) => {
-  if (!TMDB_API_KEY) {
-    return res.status(500).json({
-      error: 'TMDB_API_KEY não está configurada no ambiente do servidor.',
-    });
-  }
+  const apiKey = getTmdbApiKey();
+
+if (!apiKey) {
+  return res.status(503).json({
+    error: 'TMDB_API_KEY não configurada no servidor.'
+  });
+}
 
   const apiPath = req.params[0];
   if (!apiPath) {
@@ -69,7 +73,7 @@ app.get('/api/tmdb/*', async (req, res) => {
       upstreamUrl.searchParams.set(key, value);
     }
   }
-  upstreamUrl.searchParams.set('api_key', TMDB_API_KEY);
+  upstreamUrl.searchParams.set('api_key', apiKey);
 
   try {
     const upstreamResponse = await fetch(upstreamUrl);
